@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: back_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:alpine
+    container_name: back_redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: always
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: back_qdrant
+    ports:
+      - "${QDRANT_REST_PORT}:6333"
+      - "${QDRANT_GRPC_PORT}:6334"
+    volumes:
+      - ./qdrant_storage:/qdrant/storage:z
+    restart: always
+
+volumes:
+  postgres_data:
