@@ -6,7 +6,7 @@ from langsmith import traceable
 
 from app.core.config import settings
 from app.rag.vector_store import get_retriever
-
+from app.llm.client import llm_with_fallback 
 
 def format_docs(docs, max_chars: int = 8000) -> str:
     formatted = []
@@ -46,14 +46,6 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 
-llm = ChatOpenAI(
-    api_key=settings.API_KEY,
-    base_url=settings.BASE_URL,
-    model=settings.LLM_MODEL,
-    temperature=0.2,
-    max_tokens=512,
-    top_p=0.9,
-)
 
 
 def ensure_context(input_dict: dict) -> dict:
@@ -74,7 +66,7 @@ rag_chain = (
     }
     | RunnableLambda(ensure_context)
     | prompt
-    | llm
+    | llm_with_fallback
     | StrOutputParser()
 ).with_config(run_name="rag_chain")
 
@@ -93,7 +85,6 @@ async def answer_question(question: str, context: str, history: list = None) -> 
 async def ask_rag(question: str, history: list = None) -> str:
     retriever = get_retriever()
     
-    # Асинхронный поиск векторов в Qdrant
     docs = await retriever.ainvoke(question)
     ctx = format_docs(docs)
     

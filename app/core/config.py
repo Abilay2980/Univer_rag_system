@@ -20,6 +20,14 @@ class Settings(BaseSettings):
     UNIVER_PASSWORD:str
     QDRANT_REST_PORT:str
     QDRANT_GRPC_PORT:str
+    OLLAMA_API_KEY:str
+    OLLAMA_BASE_URL:str
+    LANGSMITH_TRACING: bool = True
+    LANGSMITH_ENDPOINT: str 
+    LANGSMITH_API_KEY: str 
+    LANGSMITH_PROJECT: str 
+    
+
 
     @property
     def ASYNC_DATABASE_URL(self):

@@ -1,4 +1,6 @@
 import uvicorn
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI,Depends,HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from contextlib import asynccontextmanager
@@ -10,7 +12,9 @@ from app.api.schemas.security import User_login,User_db
 from app.api.endpoints.transfer import transfer_router
 from app.cache.redis import cache
 
+from app.rag.retriever import ask_rag
 from app.llm.client import ask_llm
+
 
 
 @asynccontextmanager
@@ -54,7 +58,9 @@ async def get_info(payload:str = Depends(get_access)):
 async def llm_chat(q:str):
     return await ask_llm(q)
     
-    
+@app.post("/ask_rag")
+async def rag(q:str):
+    return await ask_rag(q)
     
 
 

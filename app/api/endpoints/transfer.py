@@ -29,6 +29,7 @@ async def get_ex_rate():
 @transfer_router.get("/get_balance")
 @Permission_Checker(["user"])
 async def balance(payload :str = Depends(get_access)):
+    
     return payload
 
 
