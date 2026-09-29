@@ -2,8 +2,10 @@ from openai import AsyncOpenAI
 from app.core.config import settings
 from fastapi import HTTPException, status
 from langchain_openai import ChatOpenAI
-from langchain_openai import ChatOpenAI
 from app.core.config import settings
+from langchain_core.exceptions import OutputParserException
+from langchain_openai.chat_models.base import OpenAIAPIError
+from openai import APIError
 
 primary_llm = ChatOpenAI(
     api_key=settings.API_KEY,
@@ -21,7 +23,15 @@ fallback_llm = ChatOpenAI(
     max_tokens=1024
 )
 
-llm_with_fallback = primary_llm.with_fallbacks([fallback_llm])
+llm_with_fallback = primary_llm.with_fallbacks(
+    [fallback_llm],
+    exceptions_to_handle=(
+        OpenAIAPIError,
+        APIError,
+        OutputParserException,
+        Exception, 
+    ),
+)
 
 
 async def ask_llm(q: str) -> str:
